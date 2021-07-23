@@ -1,171 +1,527 @@
 import React from 'react'
-import $ from 'jquery'
+//import { sum, divide, subtract, multiply } from 'mathjs'
+//import styles from '../pagesstyles/JavascriptCalculator.css'
+//import Helmet from 'react-helmet'
 import './App.css'
+import { sum, multiply, divide, subtract } from 'mathjs'
 
-class RandomQuoteMachine extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      text: "",
-      author: "",
-      data: []
-    };
-    this.handleClick = this.handleClick.bind(this);
-  }
+export function JSCalc() {
 
-  async componentDidMount() { 
-    // componentDidMount() is called after react first renders
-    // if editing state and rerendering, how does it avoid loops?
-    const response = await fetch("https://type.fit/api/quotes");
-    const data = await response.json();
-    let ran = Math.floor(Math.random() * data.length);
-    this.setState({
-      text: data[ran].text,
-      author: data[ran].author,
-      data: data
-    });   
-  }
+    const [result, setResult] = React.useState([0]);
 
-  async handleClick() {
-    // Improvements for next vs,
-    // how to avoid fetching again with every click
-    const response = await fetch("https://type.fit/api/quotes");
-    const data = await response.json();
-    let ran = Math.floor(Math.random() * data.length);
-    this.setState({
-      text: this.state.data[ran].text,
-      author: this.state.data[ran].author
-    });
-    
-    const quotecolor = [
-      "#36486b",
-      "#618685",
-      "#4040a1",
-      "#f18973",
-      "#bc5a45",
-      "#50394c",
-      "#80ced6",
-      "#ffef96",
-      "#405d27",
-      "#b5e7a0",
-      "#feb236",
-      "#d64161",
-      "#ff7b25"
+    const buttons = [
+        { ch: "AC", id: "clear" },
+        { ch: "+", id: "add" },
+        { ch: "-", id: "subtract" },
+        { ch: "*", id: "multiply" },
+        { ch: 1, id: "one" },
+        { ch: 2, id: "two" },
+        { ch: 3, id: "three" },
+        { ch: "/", id: "divide" },
+        { ch: 4, id: "four" },
+        { ch: 5, id: "five" },
+        { ch: 6, id: "six" },
+        { ch: "=", id: "equals" },
+        { ch: 7, id: "seven" },
+        { ch: 8, id: "eight" },
+        { ch: 9, id: "nine" },
+        { ch: ".", id: "decimal" },
+        { ch: 0, id: "zero" }
     ];
-    
-    const ran2 = Math.floor(Math.random() * (quotecolor.length - 1 - 0) + 0);
-    
-    const rancolor = quotecolor[ran2];    
 
-    $(function(){
-      $("body").css("background-color", rancolor);
-      $("#quotestand").css("color", rancolor);
-      $("button").css("background-color", rancolor);
-      $("button").css("color", "white");
-      $("#icons").css("color", rancolor);
-      $("#tw-icon").css("color", rancolor); 
-      $("#tb-icon").css("color", rancolor);
-      $("h2").css("fontSize", "50px");
-    });
-  
-  
-  }  
-  
-  render() {
     return (
-      <section id="sectionContainer">
-        <div id="quote-box">
-          <QuotePage
-            id="QuotePage"
-            text={this.state.text}
-            author={this.state.author}
-            NQButton={this.handleClick}
-          />
+        <div id="container0">            
+            <div id="pageData">JavaScript Calculator</div>
+            <div id="calculatorContainer">
+                <div id="display">{result}</div>
+                <div id="calcbuttons">
+                    {buttons.map((cb) => (
+                        <ButtonClick
+                            className="m-3 p-5"
+                            id={cb.id}
+                            ch={cb.ch}
+                            result={result}
+                            setresult={(nresult) => setResult(nresult)}
+                            key={cb.ch + " key"}
+                        >
+                            {cb.ch}
+                        </ButtonClick>
+                    ))}
+                </div>
+            </div>
+            <p id="designedBy">Designed by JasonR27</p>
         </div>
-        <p id="sign">
-          by jasonr27 for freeCodeCamp.org Front End Certification
-        </p>
-      </section>
     );
-  }
 }
 
-const QuotePage = (props) => {
-  return (
-    <div id="quotestand">
-      <h1 id="text">{props.text}</h1>
-      <p id="author">{"--- " + props.author}</p>
-      <div id="iconsButtonLine">
-        <div id="icons">
-          <a id="tweet-quote" href="twitter.com/intent/tweet">
-            <i id="tw-icon" className="fab fa-twitter"></i>
-          </a>
-          <a href="tumblr.com">
-            <i id="tb-icon" className="fab fa-tumblr-square"></i>
-          </a>
-        </div>
-        <button id="new-quote" className="btn" onClick={props.NQButton}>
-          New Quote
-        </button>
-      </div>
-    </div>
-  );
+const ButtonClick = (props) => {
+    return (
+        <BuClick
+            ch={props.ch}
+            id={props.id}
+            result={props.result}
+            setresult={(nresult) => props.setresult(nresult)}
+        />
+    );
 };
 
-class AppWrapper extends React.Component {
-  render() {
+const BuClick = (props) => {
+
+  const handleBuClick = () => {
+      
+    if (props.result === [0]) {
+        props.setresult([props.ch]);
+    } else {
+        if (typeof props.ch === "number" || props.ch === ".") {
+            if (typeof props.ch === "number") {
+                
+
+                // adding ability to deal with negative numbers operations
+
+                if (props.result[props.result.length - 1] === "-" &&
+                    typeof props.result[props.result.length - 2] === "string") {
+                    props.result[props.result.length - 1] =
+                        parseFloat(String(props.result[props.result.length - 1]).concat(
+                            String(props.ch)));
+                    props.setresult([...props.result]);
+                } else {
+                
+
+                    if (
+                        typeof props.result[props.result.length - 1] === "number" ||
+                        (typeof props.result[props.result.length - 1] === "string" &&
+                            props.result[props.result.length - 1][
+                            props.result[props.result.length - 1].length - 1
+                            ] === ".")
+                    ) {
+                        if (typeof props.result[props.result.length - 1] === "number") {
+
+                            props.result[props.result.length - 1] =
+                                parseFloat(String(props.result[props.result.length - 1]).concat(String(props.ch)));
+                            props.setresult([...props.result]);
+                        } else {
+                            if (typeof props.ch === "number") {
+                                props.result[props.result.length - 1] =
+                                    String(props.result[props.result.length - 1]).concat(
+                                        String(props.ch)
+                                    );
+                                props.setresult([...props.result]);
+                            } else {
+                                props.result[props.result.length - 1] = parseFloat(
+                                    String(props.result[props.result.length - 1]).concat(
+                                        String(props.ch)
+                                    )
+                                );
+                                props.setresult([...props.result]);
+                            }
+                        }
+                    } else {
+                        props.setresult([...props.result, props.ch]);
+                    }
+                }
+            } else {
+            
+                if (typeof props.result[props.result.length - 1] === "string") {                
+                    if (props.result[props.result.length - 1].includes(".")) {
+                        props.result[props.result.length - 1] = props.result[props.result.length - 1];
+                        props.setresult([...props.result]);
+                    } else {
+                        if (
+                            props.result[props.result.length - 1][
+                            props.result[props.result.length - 1].length - 1
+                            ] === "."
+                        ) {
+                            props.setresult([...props.result]);
+                        } else {
+                            props.result[props.result.length - 1] = String(
+                                props.result[props.result.length - 1]
+                            );
+                            props.result[props.result.length - 1] = props.result[
+                                props.result.length - 1
+                            ].concat(props.ch);
+                            props.setresult([...props.result]);
+                        }
+                    }
+                } else {
+                    props.result[props.result.length - 1] =
+                        String(props.result[props.result.length - 1]).concat(
+                            String(props.ch));
+                    props.setresult([...props.result]);
+                }
+            }
+        } else {
+            if (props.ch === "+" || props.ch === "/" || props.ch === "*") {
+                
+                if (props.result[props.result.length - 1] === "+" ||
+                    props.result[props.result.length - 1] === "/" ||
+                    props.result[props.result.length - 1] === "*" ||
+                    props.result[props.result.length - 1] === "-") {
+                
+                    if (props.result[props.result.length - 1] === "-") {                               
+
+                        if (props.result[props.result.length - 2] === "+" ||
+                            props.result[props.result.length - 2] === "*" ||
+                            props.result[props.result.length - 2] === "/") {                    
+                            let i = props.result.length - 2;                                
+                            props.setresult([ ...props.result.slice(0, i).concat(props.ch)]);
+                        } else {
+                            props.result[props.result.length - 1] = props.ch;
+                            props.setresult([...props.result]);
+                        }
+                    } else {
+
+                        props.result[props.result.length - 1] = props.ch;
+                        props.setresult([...props.result]);
+                    }
+                } else {
+                    if (props.ch === "AC" || "=") {
+                        handleOperation();
+                    } else {
+                        props.setresult([...props.result, props.ch]);
+                    }
+                }
+            } else {                    
+                if (props.ch === "-") {                    
+                    if (props.result[props.result.length - 1] === "-") {                
+                        if (props.result[props.result.length - 2] === "-") {
+                            props.result[props.result.length - 1] = "-";
+                            props.setresult([...props.result]);
+                        } else {props.setresult([...props.result, props.ch]);}        
+                    } else { props.setresult([...props.result, props.ch]); }
+                } else {
+                    handleOperation();
+                }
+            }                
+        }
+    }
+};
+
+const handleOperation = () => {
+
+    if (props.ch === "AC") {
+        props.setresult([0]);
+    } else {
+        if (props.ch === "=") {
+
+            if (!(Array.isArray(props.result[0]) || props.result.length > 1)) {
+                props.setresult([...props.result]);
+            } else {
+
+                let calcArray = props.result;
+
+                for (
+                    let i = 0;
+                    i < 10 && (Array.isArray(calcArray[0]) || calcArray.length > 1);
+                    i++
+                ) {
+
+                    props.setresult(AritExpFormula(calcArray));
+
+                    if (Array.isArray(calcArray[0]) || calcArray.length === 1) {
+                        if (!Array.isArray(calcArray[0])) {
+                            props.setresult(calcArray);
+                            break;
+                        } else {
+                            if (calcArray[0].length === 1) {
+                                props.setresult(calcArray);
+                                break;
+                            }
+                        }
+                    }
+
+                    calcArray = AritExpFormula(calcArray);
+
+                    props.setresult(calcArray);
+                }
+                props.setresult(calcArray);
+            }
+        } else {
+            props.setresult([...props.result, props.ch]);
+        }
+    }
+};
+
+const bExpForm = (array) => {
+
+    let array2;
+
+    if (array.includes("*") || array[0].includes("*")) {
+        let i;
+        if (array.includes("*")) {
+            i = array.indexOf("*");
+            array2 = [
+                array
+                    .slice(0, i - 1)
+                    .concat(multiply(array[i - 1], array[i + 1]))
+                    .concat(array.slice(i + 2, array.length))
+            ];
+        } else {
+            i = array[0].indexOf("*");
+            array2 = [
+                array[0]
+                    .slice(0, i - 1)
+                    .concat(multiply(array[0][i - 1], array[0][i + 1]))
+                    .concat(array[0].slice(i + 2, array[0].length))
+            ];
+        }
+        return array2;
+    } else {
+        if (array.includes("/") || array[0].includes("/")) {
+
+            let i;
+
+            if (array.includes("/")) {
+                i = array.indexOf("/");
+                array2 = [
+                    array
+                        .slice(0, i - 1)
+                        .concat(divide(array[i - 1], array[i + 1]))
+                        .concat(array.slice(i + 2, array.length))
+                ];
+            } else {
+                i = array[0].indexOf("/");
+                array2 = [
+                    array[0]
+                        .slice(0, i - 1)
+                        .concat(divide(array[0][i - 1], array[0][i + 1]))
+                        .concat(array[0].slice(i + 2, array[0].length))
+                ];
+            }
+
+            return array2;
+        }
+    }
+};
+
+const bExpFormAdSu = (array) => {
+
+    if (array.length === 3 || Array.isArray(array[0])) {
+
+        if (Array.isArray(array[0])) {
+
+            if (array[0].length === 3) {
+
+                if (array[0][1] === "-") {
+
+                    return [subtract(array[0][0], array[0][2])];
+
+                } else {
+                    return [sum(array[0][0], array[0][2])];
+                }
+
+            }
+        } else {
+
+            if (array[1] === "-") {
+                return [subtract(array[0], array[2])];
+            } else {
+                return [sum(array[0], array[2])];
+            }
+        }
+    }
+
+    let array2;
+
+    if (Array.isArray(array[0])) {
+
+        if (array[0].includes("+") && array[0].includes("-")) {
+            
+            if (array[0].indexOf("+") > array[0].indexOf("-")) {
+                
+                let i = array[0].indexOf("-");     
+
+                array2 = [
+                    array[0]
+                        .slice(0, i - 1)
+                        .concat(subtract(array[0][i - 1], array[0][i + 1]))
+                        .concat(array[0].slice(i + 2, array[0].length))
+                ];                   
+
+                return array2;
+
+            } else {
+                let i = array[0].indexOf("+");
+
+                array2 = [
+                    array[0]
+                        .slice(0, i - 1)
+                        .concat(sum(array[0][i - 1], array[0][i + 1]))
+                        .concat(array[0].slice(i + 2, array[0].length))
+                ];                    
+            }
+            return array2;
+        } else {
+
+            if (array[0].includes("+")) {
+
+                let i = array[0].indexOf("+");
+
+                array2 = [
+                    array[0]
+                        .slice(0, i - 1)
+                        .concat(sum(array[0][i - 1], array[0][i + 1]))
+                        .concat(array[0].slice(i + 2, array[0].length))
+                ];
+
+                return array2;
+
+            } else {
+
+                let i = array[0].indexOf("-");
+
+                array2 = [
+                    array[0]
+                        .slice(0, i - 1)
+                        .concat(subtract(array[0][i - 1], array[0][i + 1]))
+                        .concat(array[0].slice(i + 2, array[0].length))
+                ];
+
+                return array2;
+            }
+
+        }
+
+    } else {
+
+        if (array.includes("+") && array.includes("-")) {
+
+            if (array.indexOf("+") > array.indexOf("-")) {
+                
+                let i = array.indexOf("-");
+                array2 = [
+                    array
+                        .slice(0, i - 1)
+                        .concat(subtract(array[i - 1], array[i + 1]))
+                        .concat(array.slice(i + 2, array.length))
+                ];
+                
+                return array2;
+            } else {
+                let i = array.indexOf("+");                    
+                array2 = [
+                    array
+                        .slice(0, i - 1)
+                        .concat(sum(array[i - 1], array[i + 1]))
+                        .concat(array.slice(i + 2, array.length))
+                ];                    
+            }
+            return array2;
+        } else {
+            // one operator type only calculation for array
+
+            if (array.includes("+")) {
+
+                let i = array.indexOf("+");
+
+                array2 = [
+                    array
+                        .slice(0, i - 1)
+                        .concat(sum(array[i - 1], array[i + 1]))
+                        .concat(array.slice(i + 2, array.length))
+                ];
+
+                return array2;
+
+            } else {
+
+                let i = array.indexOf("-");
+
+                array2 = [
+                    array
+                        .slice(0, i - 1)
+                        .concat(subtract(array[i - 1], array[i + 1]))
+                        .concat(array.slice(i + 2, array.length))
+                ];
+
+                return array2;
+            }
+        }
+    }
+    return array2;
+};
+
+const AritExpFormula = (array) => {
+  
+    if (array.length > 2 || Array.isArray(array[0])) {
+
+        if (array.length > 3 || Array.isArray(array[0])) {
+
+            if (Array.isArray(array[0])) {
+                if (array[0].includes("*") || array[0].includes("/")) {
+                    return bExpForm(array);
+                }
+            }
+
+            if (array.includes("*") || array.includes("/")) {
+                
+                return bExpForm(array);
+
+            } else {
+                // calculate here all additions and subtractions left after all mult and div have been done
+                
+                return bExpFormAdSu(array);
+            }
+        } else {
+            if (array.length === 3) {
+                
+                if (array[1] === "+") {
+                
+                    const op = (x, y) => {
+                        return parseFloat(parseFloat(x) + parseFloat(y));
+                    };
+                
+                    return [op(array[0], array[2])];
+                } else {
+                    if (array[1] === "-") {
+                
+                        return [subtract(array[0], array[2])];
+                    } else {
+                        if (array[1] === "*") {
+                
+                            return [multiply(array[0], array[2])];
+                        } else {
+                            if (array[1] === "/") {
+                
+                                return [divide(array[0], array[2])];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+
+        if (array.length === 2) {
+            return [sum(array[0], array[1])];
+        } else {
+            return props.result[0];
+        }
+    }
+};
+
     return (
-      <section id="AppWrapper">
-        <RandomQuoteMachine id="RQM" />
-      </section>
+        <button
+            onClick={handleBuClick}
+            className="btn-dft"
+            ch={props.ch}
+            id={props.id}
+            nume={props.nume}
+            result={props.result}
+            setresult={(nresult) => props.setResult(nresult)}
+        >
+            {props.ch}
+        </button>
     );
+};
+
+export class JSCalcAppWrapper extends React.Component {
+    render() {
+      return (
+<section id="JSCalc" >
+          <JSCalc  />
+        </section>
+      );
+    }
   }
-}
 
-const quotecolor = [
-  "#36486b",
-  "#618685",
-  "#4040a1",
-  "#f18973",
-  "#bc5a45",
-  "#50394c",
-  "#80ced6",
-  "#ffef96",
-  "#405d27",
-  "#b5e7a0",
-  "#feb236",
-  "#d64161",
-  "#ff7b25"
-];
-
-const ran = Math.floor(Math.random() * (quotecolor.length - 1 - 0) + 0);
-
-const rancolor = quotecolor[ran];
-
-console.log(rancolor);
-/**
-$(document).ready(function () {
-  $("body").css("background-color", rancolor);
-  $("#quotestand").css("color", rancolor);
-  $("button").css("background-color", rancolor);
-  $("button").css("color", "white");
-  $("#icons").css("color", rancolor);
-  $("#tw-icon").css("color", rancolor);
-  $("#tb-icon").css("color", rancolor);
-  $("h2").css("fontSize", "50px");
-});
- */
-export default AppWrapper
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default JSCalcAppWrapper;
