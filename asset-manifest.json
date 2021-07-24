@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/JSCalculator.github.io/static/css/main.a521a6f5.chunk.css",
+    "main.js": "/JSCalculator.github.io/static/js/main.49ce9c0e.chunk.js",
+    "main.js.map": "/JSCalculator.github.io/static/js/main.49ce9c0e.chunk.js.map",
+    "runtime-main.js": "/JSCalculator.github.io/static/js/runtime-main.01bbc24b.js",
+    "runtime-main.js.map": "/JSCalculator.github.io/static/js/runtime-main.01bbc24b.js.map",
+    "static/js/2.e009ebe5.chunk.js": "/JSCalculator.github.io/static/js/2.e009ebe5.chunk.js",
+    "static/js/2.e009ebe5.chunk.js.map": "/JSCalculator.github.io/static/js/2.e009ebe5.chunk.js.map",
+    "index.html": "/JSCalculator.github.io/index.html",
+    "static/css/main.a521a6f5.chunk.css.map": "/JSCalculator.github.io/static/css/main.a521a6f5.chunk.css.map",
+    "static/js/2.e009ebe5.chunk.js.LICENSE.txt": "/JSCalculator.github.io/static/js/2.e009ebe5.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.01bbc24b.js",
+    "static/js/2.e009ebe5.chunk.js",
+    "static/css/main.a521a6f5.chunk.css",
+    "static/js/main.49ce9c0e.chunk.js"
+  ]
+}
